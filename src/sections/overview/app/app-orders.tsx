@@ -24,15 +24,15 @@ interface Props extends CardProps {
 const chipColor = (status: string): string => {
   switch (status) {
     case 'Completed':
-      return 'success';
+      return '#22C55E';
     case 'Pending':
-      return 'warning';
+      return '#FFAB00';
     case 'Accepted':
-      return 'secondary';
+      return '#8E33FF';
     case 'Rejected':
-      return 'default';
+      return '#212B36';
     default:
-      return 'success';
+      return '#00B8D9';
   }
 };
 
@@ -58,7 +58,7 @@ export default function AppOrders({ elevation, idNo, datetime, name, status, amo
           </Typography>
         </Box>
         <Box display='flex' gap='7px' flexDirection='column' sx={{ textAlign: 'right' }} >
-          <Chip size='small' color={chipColor(status)} label={status} />
+          <Chip size='small' sx={{ backgroundColor: chipColor(status) }} label={status} />
           <Typography variant="body2" sx={{ opacity: 0.8, }} >{itemCount} items</Typography>
           <Typography component="div" variant="h6" sx={{ fontSize: '.9rem !important' }} display='flex' alignItems='center' justifyContent='flex-end'>
             <span>{amount}</span>
