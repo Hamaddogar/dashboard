@@ -12,7 +12,7 @@ import { Paper } from '@mui/material';
 
 interface Props extends CardProps {
   title: string;
-  count: number;
+  count: string;
   icon: ReactNode;
   elevation: number
 }

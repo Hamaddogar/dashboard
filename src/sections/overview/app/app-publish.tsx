@@ -87,10 +87,22 @@ export default function AppPublish({ title, description, action, img, elevation 
 
             {
               [
-                "QR Code",
-                "Share",
-                "Settings",
-                "Preview",
+                {
+                  title: "QR Code",
+                  img: "/raw/qr.png"
+                },
+                {
+                  title: "Share",
+                  img: "/raw/link.svg"
+                },
+                {
+                  title: "Settings",
+                  img: "/raw/settings.png"
+                },
+                {
+                  title: "Preview",
+                  img: "/raw/preview.png"
+                },
               ].map((item, indx) => <Stack
                 key={indx}
                 component="span"
@@ -104,14 +116,14 @@ export default function AppPublish({ title, description, action, img, elevation 
                     borderRadius: 50
                   }}
                 >
-                  <Box component="img" src="/raw/link.svg" sx={{ width: 20, height: 20 }} />
+                  <Box component="img" src={item.img} sx={{ width: 20, height: 20 }} />
                 </Avatar>
                 <Typography variant="body2"
                   sx={{
                     opacity: 0.8,
                     textTransform: 'capitalize'
                   }}>
-                  {item}
+                  {item.title}
                 </Typography>
               </Stack>)
             }

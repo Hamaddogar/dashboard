@@ -1,34 +1,34 @@
 'use client';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
-import Stack from '@mui/material/Stack';
+// import { useTheme } from '@mui/material/styles';
+// import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+// import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
-import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
+// import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
 // components
 import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
 //
 import { FormControlLabel, Switch, Box, Paper } from '@mui/material';
-import AppWidget from '../app-widget';
+// import AppWidget from '../app-widget';
 import AppHolder from '../app-holder';
 import AppPlan from '../app-plan';
 import AppEdit from '../app-edit';
 import AppPublish from '../app-publish';
-import AppFeatured from '../app-featured';
-import AppNewInvoice from '../app-new-invoice';
-import AppTopAuthors from '../app-top-authors';
-import AppTopRelated from '../app-top-related';
+// import AppFeatured from '../app-featured';
+// import AppNewInvoice from '../app-new-invoice';
+// import AppTopAuthors from '../app-top-authors';
+// import AppTopRelated from '../app-top-related';
+// import AppWidgetSummary from '../app-widget-summary';
+// import AppCurrentDownload from '../app-current-download';
+// import AppTopInstalledCountries from '../app-top-installed-countries';
 import AppAreaInstalled from '../app-area-installed';
-import AppWidgetSummary from '../app-widget-summary';
-import AppCurrentDownload from '../app-current-download';
-import AppTopInstalledCountries from '../app-top-installed-countries';
 import AppSummary from '../app-summary';
 import AppOrders from '../app-orders';
 import AppProducts from '../app-products';
@@ -36,9 +36,8 @@ import AppProducts from '../app-products';
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
-  const { user } = useMockedUser();
-
-  const theme = useTheme();
+  // const { user } = useMockedUser();
+  // const theme = useTheme();
 
   const settings = useSettingsContext();
 
@@ -70,7 +69,45 @@ export default function OverviewAppView() {
 
         <Grid xs={12}>
           <AppHolder title="Tools" subtitle='All Tools' >
-            {[1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3].map((item, indx) =>
+            {[
+              {
+                icon: '/raw/orders.svg',
+                title: "Orders",
+                color: 'rgb(255, 93, 143,.12)'
+              }, {
+                icon: '/raw/Customers.svg',
+                title: "Customers",
+                color: 'rgb(251, 133, 0,.12)'
+              }, {
+                icon: '/raw/Categories.svg',
+                title: "Categories",
+                color: 'rgb(181, 131, 141,.12)'
+              }, {
+                icon: '/raw/Products.svg',
+                title: "Products",
+                color: 'rgb(234, 132, 201,.12)'
+              }, {
+                icon: '/raw/Analytics.svg',
+                title: "Analytics",
+                color: 'rgb(4, 102, 200,.12)'
+              }, {
+                icon: '/raw/Delivery-Pickup.svg',
+                title: "Delivery and Pickup",
+                color: 'rgb(33, 150, 243,.12)'
+              }, {
+                icon: '/raw/Vouchers.svg',
+                title: "Vouchers",
+                color: 'rgb(213, 76, 255,.12)'
+              }, {
+                icon: '/raw/Payment.svg',
+                title: "Payment Methods",
+                color: 'rgb(2, 195, 154,.12)'
+              }, {
+                icon: '/raw/Settings.svg',
+                title: "Account Settings",
+                color: 'rgb(134, 136, 163,.12)'
+              },
+            ].map((item, indx) =>
               <Box
                 key={indx}
                 sx={{
@@ -78,7 +115,7 @@ export default function OverviewAppView() {
                   maxnWidth: "100px",
                   minWidth: "100px",
                   height: "120px",
-                  backgroundColor: "rgb(255, 93, 143,.12)",
+                  backgroundColor: item.color,
                   borderRadius: "16px",
                   textAlign: 'center',
                   display: 'flex',
@@ -88,10 +125,8 @@ export default function OverviewAppView() {
                   flexDirection: 'column'
                 }}
               >
-                <Box component='img' src='/raw/orders.svg' sx={{ width: '29px' }} />
-                <Typography variant="subtitle2">
-                  Orders
-                </Typography>
+                <Box component='img' src={item.icon} sx={{ width: '29px' }} />
+                <Typography variant="subtitle2">{item.title} </Typography>
               </Box>
             )}
           </AppHolder>
@@ -99,13 +134,44 @@ export default function OverviewAppView() {
 
         <Grid xs={12}>
           <AppHolder title="Quick Summary">
-            {[1, 2, 3, 1, 2, 3].map((item, indx) =>
+            {[
+              {
+                title: "Live Visitors",
+                icon: "/raw/VisitorsN.svg",
+                count: "78"
+              },
+              {
+                title: "Customers",
+                icon: "/raw/CustomersN.svg",
+                count: '6.8k'
+              },
+              {
+                title: "Total Orders",
+                icon: "/raw/OrdersN.svg",
+                count: "324"
+              },
+              {
+                title: "Categories",
+                icon: "/raw/CategoriesN.svg",
+                count: "8"
+              },
+              {
+                title: "Products",
+                icon: "/raw/ProductsN.svg",
+                count: "81"
+              },
+              {
+                title: "Total Earning",
+                icon: "/raw/EarningN.svg",
+                count: '8,520 KWD'
+              },
+            ].map((item, indx) =>
               <AppSummary
                 elevation={7}
                 key={indx}
-                title='Live Visitors'
-                count={78}
-                icon={<Box component='img' src='/raw/VisitorsN.svg' />}
+                title={item.title}
+                count={item.count}
+                icon={<Box component='img' src={item.icon} />}
               />
             )}
 
