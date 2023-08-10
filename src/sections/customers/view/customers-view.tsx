@@ -274,8 +274,8 @@ export default function OrdersListView() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '14px' }} >
                   <Box component='img' src='/raw/CustomerAvatar.svg' alt=" " width='55px' />
                   <Box display='flex' gap='0px' flexDirection='column' >
-                    <Typography component='p' variant="subtitle2" sx={{ fontSize: '1.1rem', fontWeight: 900 }} > Mohamed Hassan </Typography>
-                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}> mohamed.hassan@gmail.com </Typography>
+                    <Typography component='p' variant="subtitle2" sx={{ fontSize: '1.1rem', fontWeight: 900 }} > Mohamed Hassan <Chip label='New' size='small' color='primary' sx={{ color: '#0F164A', fontSize: '11px', borderRadius: '16px', height: 'auto', padding: '2px 5px 0px 5px' }} /></Typography>
+                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}> mohamed.hassan@gmail.com  </Typography>
                   </Box>
                 </Box>
                 <Divider flexItem />
@@ -337,7 +337,7 @@ export default function OrdersListView() {
                 </Box>
 
 
-                <Box>
+                <Box sx={{ padding: '10px', boxShadow: "0px 4px 20px #0F134914", borderRadius: '12px', background: '#FFFFFF' }}>
                   <Stack direction='row' alignItems='center' justifyContent='space-between'>
                     <Box>
                       <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}> #425453697 </Typography>
