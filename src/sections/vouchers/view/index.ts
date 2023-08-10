@@ -1,1 +1,0 @@
-export { default as VouchersView } from './vouchers-view';
