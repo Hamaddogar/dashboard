@@ -156,7 +156,7 @@ export default function OrdersListView() {
                     <Grid item xs={12} sm={6} md={4}>
                       <Paper sx={{ borderRadius: '16px' }}>
                         <Grid container item alignItems='center' columnGap="20px" rowGap="10px" sx={{ p: "30px 22px", minHeight: '150px', boxShadow: '0px 6px 20px #00000014', borderRadius: '16px' }}>
-                          <Grid item xs={12}>
+                          <Grid item xs={12} sx={{ minHeight: '57px' }}>
                             <Box component='img' src={product.logo} alt=" " />
                           </Grid>
                           <Grid item xs={12}>

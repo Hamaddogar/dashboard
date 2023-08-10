@@ -1,13 +1,13 @@
 // sections
 
-import { PaymentsView } from "src/sections/overview/payments/view";
+import { IntegrationsView } from "src/sections/overview/integrations/view";
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Orders List',
+  title: 'Dashboard: Integrations',
 };
 
 export default function OrderListPage() {
-  return <PaymentsView />;
+  return <IntegrationsView />;
 }

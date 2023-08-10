@@ -55,7 +55,7 @@ export default function AppEdit({ elevation = 7 }: Props) {
               background: `transparent linear-gradient(270deg, #1BFCB6 0%, #0DE5FD 100%) 0% 0% no-repeat padding-box`,
               color: '#FFFFFF', borderRadius: '20px', fontWeight: 300
             }} >
-              Upgrade Plan
+              Call Me
             </Button>
 
             <Button endIcon={<Box component='img' src='/raw/arrow-right.svg' />} variant='contained' sx={{ backgroundColor: '#F5F5F8', opacity: 0.8, color: '#0F1349', borderRadius: '20px', fontWeight: 300, '&:hover': { backgroundColor: '#F5F5F8', } }} >
