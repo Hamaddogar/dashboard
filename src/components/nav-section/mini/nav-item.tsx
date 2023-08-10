@@ -39,7 +39,9 @@ const NavItem = forwardRef<HTMLDivElement, Props>(
       >
         {icon && (
           <StyledIcon
+            active={active}
             size={config.iconSize}
+            {...other}
             sx={{
               ...(subItem && { mr: 1.5 }),
             }}

@@ -101,6 +101,11 @@ export const paths = {
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
+      apptools: `${ROOTS.DASHBOARD}/tools`,
+      trending: `${ROOTS.DASHBOARD}/trending`,
+      mostselling: `${ROOTS.DASHBOARD}/most-Selling`,
+      subscriptionplan: `${ROOTS.DASHBOARD}/subscription-plan`,
+      subscriptionplancheckout: `${ROOTS.DASHBOARD}/subscription-plan-checkout`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
@@ -129,6 +134,10 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/product/${MOCK_ID}/edit`,
       },
     },
+    products: {
+      root: `${ROOTS.DASHBOARD}/products`,
+      new: `${ROOTS.DASHBOARD}/products/new`,
+    },
     invoice: {
       root: `${ROOTS.DASHBOARD}/invoice`,
       new: `${ROOTS.DASHBOARD}/invoice/new`,
@@ -155,6 +164,24 @@ export const paths = {
       demo: {
         details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,
       },
+    },
+    orders: {
+      root: `${ROOTS.DASHBOARD}/orders`,
+    },
+    customers: {
+      root: `${ROOTS.DASHBOARD}/customers`,
+    },
+    payments: {
+      root: `${ROOTS.DASHBOARD}/payments`,
+    },
+    vouchers: {
+      root: `${ROOTS.DASHBOARD}/vouchers`,
+    },
+    integrations: {
+      root: `${ROOTS.DASHBOARD}/integrations`,
+    },
+    categories: {
+      root: `${ROOTS.DASHBOARD}/categories`,
     },
     job: {
       root: `${ROOTS.DASHBOARD}/job`,

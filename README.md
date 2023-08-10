@@ -20,3 +20,6 @@ https://mui.com/store/items/minimal-dashboard/
 
 - npm i OR npm i --legacy-peer-deps
 - npm run dev
+
+## Routes file search
+- drcode-config-navigation

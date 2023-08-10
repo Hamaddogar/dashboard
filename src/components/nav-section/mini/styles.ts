@@ -19,7 +19,7 @@ export const StyledItem = styled(ListItemButton, {
   const activeStyles = {
     root: {
       color:
-        theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
+        theme.palette.mode === 'light' ? theme.palette.primary.darker : theme.palette.primary.light,
       backgroundColor: alpha(theme.palette.primary.main, 0.08),
       '&:hover': {
         backgroundColor: alpha(theme.palette.primary.main, 0.16),
@@ -77,10 +77,14 @@ export const StyledItem = styled(ListItemButton, {
 
 type StyledIconProps = {
   size?: number;
+  active?: boolean;
 };
 
-export const StyledIcon = styled(ListItemIcon)<StyledIconProps>(({ size }) => ({
+export const StyledIcon = styled(ListItemIcon)<StyledIconProps>(({ size, active, theme }) => ({
   width: size,
   height: size,
   marginRight: 0,
+  ...(active && {
+    color: theme.palette.primary.light,
+  }),
 }));

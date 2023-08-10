@@ -19,7 +19,9 @@ interface Props extends StackProps {
 export default function AppPublish({ title, description, action, img, elevation = 7, ...other }: Props) {
 
   return (
-    <Paper elevation={elevation}>
+    <Paper  sx={{
+      boxShadow: '0px 0px 20px #00000014'
+    }}>
       <Card sx={{ p: '30px' }}>
         <Stack
           justifyContent="space-between"
@@ -116,7 +118,7 @@ export default function AppPublish({ title, description, action, img, elevation 
                     borderRadius: 50
                   }}
                 >
-                  <Box component="img" src={item.img} sx={{ width: 20, height: 20 }} />
+                  <Box component="img" src={item.img} sx={{ width: 20 }} />
                 </Avatar>
                 <Typography variant="body2"
                   sx={{

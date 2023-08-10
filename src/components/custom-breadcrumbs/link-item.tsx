@@ -10,8 +10,8 @@ import { BreadcrumbsLinkProps } from './types';
 
 type Props = {
   link: BreadcrumbsLinkProps;
-  activeLast?: boolean;
-  disabled: boolean;
+  activeLast?: string;
+  disabled?: any;
 };
 
 export default function BreadcrumbsLink({ link, activeLast, disabled }: Props) {
@@ -21,13 +21,15 @@ export default function BreadcrumbsLink({ link, activeLast, disabled }: Props) {
     typography: 'body2',
     alignItems: 'center',
     color: 'text.primary',
+    fontWeight: 800,
     display: 'inline-flex',
     ...(disabled &&
       !activeLast && {
-        cursor: 'default',
-        pointerEvents: 'none',
-        color: 'text.disabled',
-      }),
+      cursor: 'default',
+      pointerEvents: 'none',
+      color: 'text.disabled',
+      fontWeight: 'normal'
+    }),
   };
 
   const renderContent = (
@@ -45,7 +47,7 @@ export default function BreadcrumbsLink({ link, activeLast, disabled }: Props) {
         </Box>
       )}
 
-      {name}
+      <span style={{ textTransform: 'capitalize', fontWeight: activeLast === name ? 900 : 'normal' }} >{name}</span>
     </>
   );
 

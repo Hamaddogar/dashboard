@@ -78,6 +78,12 @@ export function textField(theme: Theme) {
     // STANDARD
     MuiInput: {
       styleOverrides: {
+        root: {
+          borderRadius: '16px',
+          '& input': {
+            padding: "14px"
+          },
+        },
         underline: {
           '&:before': {
             borderBottomColor: alpha(theme.palette.grey[500], 0.32),
@@ -122,7 +128,7 @@ export function textField(theme: Theme) {
     MuiFilledInput: {
       styleOverrides: {
         root: {
-          borderRadius: theme.shape.borderRadius,
+          borderRadius: '16px',
           backgroundColor: alpha(theme.palette.grey[500], 0.08),
           '&:hover': {
             backgroundColor: alpha(theme.palette.grey[500], 0.16),
@@ -138,6 +144,9 @@ export function textField(theme: Theme) {
           },
           [`&.${filledInputClasses.disabled}`]: {
             backgroundColor: theme.palette.action.disabledBackground,
+          },
+          '& input': {
+            padding: "14px"
           },
         },
       },

@@ -6,6 +6,9 @@ export function select(theme: Theme) {
   return {
     MuiSelect: {
       styleOverrides: {
+        select: {
+          padding: '14px',
+        },
         icon: {
           right: 10,
           width: 18,
@@ -15,7 +18,9 @@ export function select(theme: Theme) {
       },
     },
     MuiNativeSelect: {
+      padding: '14px !important',
       styleOverrides: {
+        padding: '14px !important',
         icon: {
           right: 10,
           width: 18,
@@ -24,5 +29,9 @@ export function select(theme: Theme) {
         },
       },
     },
-  };
+
+    MuiInputBase: {
+      padding: '14px !important',
+    },
+  }
 }

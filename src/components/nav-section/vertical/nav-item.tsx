@@ -40,7 +40,7 @@ export default function NavItem({
       {...other}
     >
       <>
-        {icon && <StyledIcon size={config.iconSize}>{icon}</StyledIcon>}
+        {icon && <StyledIcon active={active} size={config.iconSize} {...other}>{icon}</StyledIcon>}
 
         {subItem && (
           <StyledIcon size={config.iconSize}>

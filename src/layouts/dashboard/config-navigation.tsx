@@ -19,6 +19,7 @@ const icon = (name: string) => (
 );
 
 const ICONS = {
+  categorie: icon('ic_categorie'),
   job: icon('ic_job'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
@@ -43,10 +44,16 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  customers: icon('customers'),
+  payments: icon('Payment'),
+  vouchers: icon('Vouchers'),
+  integrations: icon('Integrations'),
+
+
 };
 
 // ----------------------------------------------------------------------
-
+// drcode-config-navigation
 export function useNavData() {
   const { t } = useLocales();
 
@@ -61,6 +68,40 @@ export function useNavData() {
             title: t('app'),
             path: paths.dashboard.root,
             icon: ICONS.dashboard,
+          },
+          {
+            title: t('orders'),
+            path: paths.dashboard.orders.root,
+            icon: ICONS.order,
+          },
+          {
+            title: t('Categories'),
+            path: paths.dashboard.categories.root,
+            icon: ICONS.categorie,
+          }, {
+            title: t('Products'),
+            path: paths.dashboard.products.root,
+            icon: ICONS.product,
+          },
+          {
+            title: t('Customers'),
+            path: paths.dashboard.customers.root,
+            icon: ICONS.customers,
+          },
+          {
+            title: t('Payment Methods'),
+            path: paths.dashboard.payments.root,
+            icon: ICONS.payments,
+          },
+          {
+            title: t('Vouchers'),
+            path: paths.dashboard.vouchers.root,
+            icon: ICONS.vouchers,
+          },
+          {
+            title: t('Integrations'),
+            path: paths.dashboard.integrations.root,
+            icon: ICONS.integrations,
           },
           {
             title: t('ecommerce'),

@@ -1,46 +1,30 @@
 'use client';
 
 // @mui
-// import { useTheme } from '@mui/material/styles';
-// import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-// hooks
-// import { useMockedUser } from 'src/hooks/use-mocked-user';
-// _mock
-// import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
 // components
 import { useSettingsContext } from 'src/components/settings';
 // assets
 import { SeoIllustration } from 'src/assets/illustrations';
 //
 import { FormControlLabel, Switch, Box, Paper } from '@mui/material';
-// import AppWidget from '../app-widget';
+import { paths } from 'src/routes/paths';
 import AppHolder from '../app-holder';
-import AppPlan from '../app-plan';
-import AppEdit from '../app-edit';
 import AppPublish from '../app-publish';
-// import AppFeatured from '../app-featured';
-// import AppNewInvoice from '../app-new-invoice';
-// import AppTopAuthors from '../app-top-authors';
-// import AppTopRelated from '../app-top-related';
-// import AppWidgetSummary from '../app-widget-summary';
-// import AppCurrentDownload from '../app-current-download';
-// import AppTopInstalledCountries from '../app-top-installed-countries';
 import AppAreaInstalled from '../app-area-installed';
 import AppSummary from '../app-summary';
 import AppOrders from '../app-orders';
 import AppProducts from '../app-products';
-
+import AppPlan from '../app-plan';
+import AppEdit from '../app-edit';
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
   // const { user } = useMockedUser();
   // const theme = useTheme();
-
   const settings = useSettingsContext();
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
@@ -59,23 +43,22 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6}>
-          <AppPlan elevation={7} />
+        <Grid xs={6}>
+          <AppPlan elevation={8} />
         </Grid>
-
-        <Grid xs={12} md={6}>
+        <Grid xs={6}>
           <AppEdit elevation={7} />
         </Grid>
 
         <Grid xs={12}>
-          <AppHolder title="Tools" subtitle='All Tools' >
+          <AppHolder title="Tools" subtitle='All Tools' path={paths.dashboard.general.apptools} >
             {[
               {
                 icon: '/raw/orders.svg',
                 title: "Orders",
                 color: 'rgb(255, 93, 143,.12)'
               }, {
-                icon: '/raw/Customers.svg',
+                icon: '/raw/Customers0.svg',
                 title: "Customers",
                 color: 'rgb(251, 133, 0,.12)'
               }, {
@@ -106,6 +89,18 @@ export default function OverviewAppView() {
                 icon: '/raw/Settings.svg',
                 title: "Account Settings",
                 color: 'rgb(134, 136, 163,.12)'
+              }, {
+                icon: '/raw/Integrations.svg',
+                title: "Integrations",
+                color: 'rgb(141, 199, 63,.12)'
+              }, {
+                icon: '/raw/domain.svg',
+                title: "Domain Settings",
+                color: 'rgb(87, 202, 239,.12)'
+              }, {
+                icon: '/raw/design.svg',
+                title: "Website Design",
+                color: 'rgb(239, 202, 8,.12)'
               },
             ].map((item, indx) =>
               <Box
@@ -233,7 +228,7 @@ export default function OverviewAppView() {
         </Grid>
 
         <Grid xs={12}>
-          <AppHolder title="Revenue Chart" subtitle="View Reports">
+          <AppHolder title="Revenue Chart" subtitle="View Reports" path={paths.dashboard.general.analytics}>
             <Paper elevation={7} sx={{ width: '100%' }}>
               <AppAreaInstalled
                 title="Total"
@@ -287,9 +282,10 @@ export default function OverviewAppView() {
           </AppHolder>
         </Grid>
 
-
         <Grid xs={12}>
-          <AppHolder title="Trending" subtitle="View All" description='Most trending items and products'>
+          <AppHolder
+            path={paths.dashboard.general.trending}
+            icon='/raw/hot.svg' title="Trending" subtitle="View All" description='Most trending items and products'>
             {[
               {
                 idNo: "#1",
@@ -336,9 +332,8 @@ export default function OverviewAppView() {
           </AppHolder>
         </Grid>
 
-
         <Grid xs={12}>
-          <AppHolder title="Most Selling" subtitle="View All" description="Most selling items and products">
+          <AppHolder path={paths.dashboard.general.mostselling} title="Most Selling" subtitle="View All" description="Most selling items and products">
             {[
               {
                 idNo: "#1",

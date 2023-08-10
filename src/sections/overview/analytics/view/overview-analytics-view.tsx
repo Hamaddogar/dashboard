@@ -4,25 +4,15 @@
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-// _mock
-import {
-  _analyticTasks,
-  _analyticPosts,
-  _analyticTraffic,
-  _analyticOrderTimeline,
-} from 'src/_mock';
+
 // components
 import { useSettingsContext } from 'src/components/settings';
 //
-import AnalyticsNews from '../analytics-news';
-import AnalyticsTasks from '../analytics-tasks';
-import AnalyticsCurrentVisits from '../analytics-current-visits';
-import AnalyticsOrderTimeline from '../analytics-order-timeline';
-import AnalyticsWebsiteVisits from '../analytics-website-visits';
-import AnalyticsWidgetSummary from '../analytics-widget-summary';
-import AnalyticsTrafficBySite from '../analytics-traffic-by-site';
-import AnalyticsCurrentSubject from '../analytics-current-subject';
-import AnalyticsConversionRates from '../analytics-conversion-rates';
+
+import CustomCrumbs from 'src/components/custom-crumbs/custom-crumbs';
+import { Paper } from '@mui/material';
+import AppAreaInstalled from '../../app/app-area-installed';
+import AppHolder from '../../app/app-holder';
 
 // ----------------------------------------------------------------------
 
@@ -31,158 +21,110 @@ export default function OverviewAnalyticsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <Typography
-        variant="h4"
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      >
-        Hi, Welcome back 👋
-      </Typography>
+      <CustomCrumbs
+        heading="Analytics"
+        description="Reports and analytics on your website."
+        crums={false}
+      />
+      <Paper elevation={7} sx={{ width: '100%' }}>
+        <AppAreaInstalled
+          title="Total"
+          subheader="4.100,500 KWD"
+          chart={{
+            categories: [
+              'Jan',
+              'Feb',
+              'Mar',
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ],
+            series: [
+              {
+                year: '2019',
+                data: [
+                  {
+                    name: 'Asia',
+                    data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 35, 51, 49],
+                  },
+                  {
+                    name: 'America',
+                    data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
+                  },
+                ],
+              },
+              {
+                year: '2020',
+                data: [
+                  {
+                    name: 'Asia',
+                    data: [51, 35, 41, 10, 91, 69, 62, 148, 91, 69, 62, 49],
+                  },
+                  {
+                    name: 'America',
+                    data: [56, 13, 34, 10, 77, 99, 88, 45, 77, 99, 88, 77],
+                  },
+                ],
+              },
+            ],
+          }}
+        />
+      </Paper>
 
-      <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Weekly Sales"
-            total={714000}
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
+      <CustomCrumbs
+        sx={{ mt: "40px" }}
+        heading="Summary"
+        description="Reports and numbers on your website."
+        crums={false}
+      />
+      <AppHolder>
+        {[
+          {
+            title: "TOTAL SALES",
+            growth: "+6%",
+            count: '4,129.500',
+          }, {
+            title: "AVERAGE ORDER VALUE",
+            growth: "-32%",
+            count: '16.750',
+            color: "#FF008B"
+          }, {
+            title: "TOTAL ORDERS",
+            growth: "+2.5%",
+            count: '304',
+          }, {
+            title: "TOTAL CUSTOMERS",
+            growth: "+4.1%",
+            count: '1.892',
+          },
+        ].map((item, indx) => <Paper key={indx} elevation={11} >
+          <Grid container p="20px" alignItems='center' sx={{
+            width: "256px",
+            height: "100px",
+            borderRadius: "16px",
+          }}>
+            <Grid xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '5px' }}>
+              <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.6rem' }} >{item.title}</Typography>
+              <Typography component='p' variant="subtitle2" sx={{ fontSize: '.7.5rem', color: item.color ?? "#00DF9A" }} >{item.growth} </Typography>
+            </Grid>
+            <Grid xs={12}>
+              <Typography component='p' variant="h6" sx={{ fontSize: '.8rem' }} >
+                {item.count} <span style={{ fontSize: '12px' }}>KWD</span>
+              </Typography>
+            </Grid>
+          </Grid>
+        </Paper>
+        )}
+      </AppHolder>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="New Users"
-            total={1352831}
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-          />
-        </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Item Orders"
-            total={1723315}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Bug Reports"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AnalyticsWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
-            chart={{
-              labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ],
-              series: [
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AnalyticsCurrentVisits
-            title="Current Visits"
-            chart={{
-              series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AnalyticsConversionRates
-            title="Conversion Rates"
-            subheader="(+43%) than last year"
-            chart={{
-              series: [
-                { label: 'Italy', value: 400 },
-                { label: 'Japan', value: 430 },
-                { label: 'China', value: 448 },
-                { label: 'Canada', value: 470 },
-                { label: 'France', value: 540 },
-                { label: 'Germany', value: 580 },
-                { label: 'South Korea', value: 690 },
-                { label: 'Netherlands', value: 1100 },
-                { label: 'United States', value: 1200 },
-                { label: 'United Kingdom', value: 1380 },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AnalyticsCurrentSubject
-            title="Current Subject"
-            chart={{
-              categories: ['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math'],
-              series: [
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AnalyticsNews title="News" list={_analyticPosts} />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AnalyticsOrderTimeline title="Order Timeline" list={_analyticOrderTimeline} />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AnalyticsTrafficBySite title="Traffic by Site" list={_analyticTraffic} />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AnalyticsTasks title="Tasks" list={_analyticTasks} />
-        </Grid>
-      </Grid>
     </Container>
   );
 }
