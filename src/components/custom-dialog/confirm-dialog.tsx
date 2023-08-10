@@ -23,7 +23,11 @@ export default function ConfirmDialog({
   ...other
 }: ConfirmDialogProps) {
   return (
-    <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other}>
+    <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={onClose} {...other} sx={{
+      '& .MuiPaper-root': {
+        overflowY: 'visible !important'
+      }
+    }}>
       <Box position='relative'>
         <Box sx={{
           boxShadow: "0px 4px 20px #0F134933",
@@ -34,10 +38,10 @@ export default function ConfirmDialog({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          position:'absolute',
-          right:'0px',
-          top:'-20px',
-          cursor:'pointer'
+          position: 'absolute',
+          right: '0px',
+          top: '-20px',
+          cursor: 'pointer'
         }} onClick={onClose} ><Iconify icon="ic:baseline-clear" /></Box>
       </Box>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>

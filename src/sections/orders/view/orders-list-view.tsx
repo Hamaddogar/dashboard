@@ -843,11 +843,7 @@ export default function OrdersListView() {
               onClose={handleDrawerCloseCommon('analytics')}
               noCancel={false}
               maxWidth='sm'
-              sx={{
-                '& .MuiPaper-root': {
-                  overflowY: 'visible !important'
-                }
-              }}
+              
               content={
                 <Grid container spacing='20px'>
                   <Grid item xs={12} md={12} >

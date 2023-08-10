@@ -4,7 +4,7 @@ import Stack, { StackProps } from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 // theme
-import { Card, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -19,10 +19,10 @@ interface Props extends StackProps {
 export default function AppPublish({ title, description, action, img, elevation = 7, ...other }: Props) {
 
   return (
-    <Paper  sx={{
+    <Paper sx={{
       boxShadow: '0px 0px 20px #00000014'
     }}>
-      <Card sx={{ p: '30px' }}>
+      <Box sx={{ p: '30px' }}>
         <Stack
           justifyContent="space-between"
           alignItems="center"
@@ -132,7 +132,7 @@ export default function AppPublish({ title, description, action, img, elevation 
 
           </Stack>
         </Stack>
-      </Card>
+      </Box>
     </Paper>
   );
 }

@@ -7,6 +7,7 @@ import { useState, useCallback } from 'react';
 import Divider from '@mui/material/Divider';
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
+import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import { Box, Grid, Stack, Chip, Typography, Paper } from '@mui/material';
@@ -266,17 +267,6 @@ export default function OrdersListView() {
               open={openDetails}
               onClose={handleDrawerCloseCommon('details')}
               title="Customer Details"
-            // actions={<Stack alignItems='center' justifyContent='center' spacing="10px">
-            //   <Button
-            //     fullWidth
-            //     variant="soft"
-            //     color="success"
-            //     size="large"
-            //     sx={{ borderRadius: '30px' }}
-            //   >
-            //     Save
-            //   </Button>
-            // </Stack>}
             >
               <Divider flexItem />
               <Box width='100%' display='flex' flexDirection='column' gap='25px'>
@@ -400,7 +390,27 @@ export default function OrdersListView() {
                 <Typography mt='20px' mb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', maxWidth: { xs: '120px', md: '218px' } }} >
                   Mobile Number
                 </Typography>
-                <TextField fullWidth variant='filled' defaultValue='965128743291' name='PHONE' />
+
+                <TextField fullWidth variant='filled' defaultValue='965128743291' name='PHONE'
+                  sx={{
+                    '& .MuiInputAdornment-root': {
+                      marginTop: '0px !important',
+                      // paddingLeft: '10px'
+                    },
+                    '& input': {
+                      paddingLeft: '2px !important'
+                    }
+                  }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <Stack direction='row' alignItems='center' spacing="8px">
+                        <Iconify icon="mingcute:down-fill" width={43} />
+                        <Box component='img' src='/raw/flagN.png' />
+                        <Divider orientation="vertical" variant='middle' flexItem />
+                      </Stack>
+                    </InputAdornment>,
+                  }}
+                />
 
 
                 <Typography mt='20px' mb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', maxWidth: { xs: '120px', md: '218px' } }} >
@@ -414,16 +424,16 @@ export default function OrdersListView() {
                 </Typography>
 
                 <Box sx={{ borderRadius: '12px', padding: '24px', background: 'rgb(245, 245, 248)' }}>
-                  <Stack direction='row' alignItems='center' spacing='20px'>
-                    <Iconify icon="ion:location" style={{ fontSize: '80px' }} />
+                  <Stack direction='row' alignItems='center' spacing='10px'>
+                    <Iconify icon="ion:location" width={45} style={{ color: '#8688A3' }} />
                     <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', fontWeight: 900 }} >
                       Ali Sabah Al-Salem - Block 5A - Street 8 House 4 - Floor 2
                     </Typography>
                   </Stack>
 
                   <Divider sx={{ my: '22px' }} />
-                  <Stack direction='row' alignItems='center' spacing='20px'>
-                    <Iconify icon="mingcute:add-fill" />
+                  <Stack direction='row' alignItems='center' spacing='10px'>
+                    <Iconify icon="mingcute:add-fill" width={30} style={{ color: '#8688A3' }} />
                     <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', fontWeight: 900 }} >
                       Add Delivery Location
                     </Typography>
@@ -440,11 +450,6 @@ export default function OrdersListView() {
               onClose={handleDrawerCloseCommon('analytics')}
               noCancel={false}
               maxWidth='md'
-              sx={{
-                '& .MuiPaper-root': {
-                  overflowY: 'visible !important'
-                }
-              }}
               content={
                 <Grid container spacing='15px'>
                   <Grid item xs={12} md={12} >

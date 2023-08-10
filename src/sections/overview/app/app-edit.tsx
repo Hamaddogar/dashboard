@@ -33,6 +33,7 @@ export default function AppEdit({ elevation = 7 }: Props) {
           flexGrow={1}
           // alignItems={{ xs: 'center' }}
           sx={{ textAlign: 'left', width: '100%' }}
+          spacing="7px"
         >
           <Typography variant="h4" sx={{ whiteSpace: 'pre-line', }}>
             Want Custom Edits?
@@ -44,7 +45,7 @@ export default function AppEdit({ elevation = 7 }: Props) {
               opacity: 0.8,
               maxWidth: 360,
               mb: { xs: 1 },
-              color: 'primary.darker'
+              color: '#8688A3'
             }}
           >
             You can renew your subscription.
@@ -53,12 +54,12 @@ export default function AppEdit({ elevation = 7 }: Props) {
           <Box display='flex' flexWrap='wrap' gap='5px' alignItems='center' >
             <Button variant='contained' startIcon={<Box component='img' src='/raw/OverZaki.svg' />} sx={{
               background: `transparent linear-gradient(270deg, #1BFCB6 0%, #0DE5FD 100%) 0% 0% no-repeat padding-box`,
-              color: '#FFFFFF', borderRadius: '20px', fontWeight: 300
+              color: '#0F1349', borderRadius: '20px', fontWeight: 900, padding: '6px 23px', fontSize: '13px',
             }} >
               Call Me
             </Button>
 
-            <Button endIcon={<Box component='img' src='/raw/arrow-right.svg' />} variant='contained' sx={{ backgroundColor: '#F5F5F8', opacity: 0.8, color: '#0F1349', borderRadius: '20px', fontWeight: 300, '&:hover': { backgroundColor: '#F5F5F8', } }} >
+            <Button endIcon={<Box component='img' src='/raw/arrow-right.svg' />} variant='contained' sx={{ padding: '6px 23px', fontSize: '13px', backgroundColor: '#F5F5F8', opacity: 0.8, color: '#0F1349', borderRadius: '20px', fontWeight: 300, '&:hover': { backgroundColor: '#F5F5F8', } }} >
               You have 2 tasks
             </Button>
           </Box>

@@ -112,7 +112,7 @@ export default function StepsNewOrders({ closeDrawer }: any) {
             {activeStep === 0 && <Box sx={{ width: '100%', textAlign: 'left' }}>
                 <Typography component='p' variant="subtitle2" sx={{ mb: '12px', opacity: 0.7, fontSize: '.8rem' }}>Enter customer number</Typography>
                 <TextField
-                    placeholder='965 | 128743291'
+                    placeholder='128743291'
                     fullWidth
                     variant='filled'
                     type='number'
@@ -123,14 +123,23 @@ export default function StepsNewOrders({ closeDrawer }: any) {
                         },
                         '& .MuiInputAdornment-root': {
                             marginTop: '0px !important',
-                            paddingLeft: '10px'
+                            // paddingLeft: '10px'
                         },
                         '& input': {
                             color: '#8898AA',
                             paddingLeft: '10px',
                             fontSize: '14px',
-                            padding: '15px 20px 15px 20px !important'
+                            padding: '15px 20px 15px 2px !important'
                         }
+                    }}
+                    InputProps={{
+                        startAdornment: <InputAdornment position="start">
+                            <Stack direction='row' alignItems='center' spacing="8px">
+                                <Iconify icon="mingcute:down-fill" width={43} />
+                                <Box component='img' src='/raw/flagN.png' />
+                                <Divider orientation="vertical" variant='middle' flexItem />
+                            </Stack>
+                        </InputAdornment>,
                     }}
                 />
                 <Typography component='p' variant="subtitle2" sx={{ mt: '12px', opacity: 0.7, fontSize: '.8rem' }}> Or Select from current customers </Typography>

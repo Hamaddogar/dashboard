@@ -46,6 +46,7 @@ export default function AppPlan({ elevation = 7 }: Props) {
           sx={{
             textAlign: { xs: 'center', md: 'left' },
           }}
+          spacing="7px"
         >
           <Typography variant="h4" sx={{ whiteSpace: 'pre-line', }}>
             Pro Plan
@@ -57,7 +58,7 @@ export default function AppPlan({ elevation = 7 }: Props) {
               opacity: 0.8,
               maxWidth: 360,
               mb: { xs: 1 },
-              color: 'primary.darker'
+              color: ' #282B5C'
             }}
           >
             You can renew your subscription.
@@ -65,12 +66,12 @@ export default function AppPlan({ elevation = 7 }: Props) {
 
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '5px', textAlign: { xs: 'center', md: 'left' } }}>
             <Linker path={paths.dashboard.general.subscriptionplan}>
-              <Button variant='contained' sx={{ backgroundColor: '#0F1349', '&:hover': { backgroundColor: '#0F1349' }, color: '#FFFFFF', borderRadius: '20px', fontWeight: 300 }} >
+              <Button variant='contained' sx={{ padding: '6px 23px',fontSize:'13px', backgroundColor: '#0F1349', '&:hover': { backgroundColor: '#0F1349' }, color: '#FFFFFF', borderRadius: '20px', fontWeight: 300 }} >
                 Upgrade Plan
               </Button>
             </Linker>
 
-            <Button variant='contained' sx={{ backgroundColor: '#1AE0AA', '&:hover': { backgroundColor: '#1AE0AA' }, color: '#0F1349', borderRadius: '20px', fontWeight: 300 }} >
+            <Button variant='contained' sx={{ padding: '6px 23px',fontSize:'13px', backgroundColor: '#1AE0AA', '&:hover': { backgroundColor: '#1AE0AA' }, color: '#0F1349', borderRadius: '20px', fontWeight: 300 }} >
               Renew Plan
             </Button>
           </Box>
