@@ -19,6 +19,7 @@ import AppOrders from '../app-orders';
 import AppProducts from '../app-products';
 import AppPlan from '../app-plan';
 import AppEdit from '../app-edit';
+import AppPlanandEdit from '../app-plan-edit';
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
@@ -42,13 +43,15 @@ export default function OverviewAppView() {
             }
           />
         </Grid>
-
-        <Grid xs={6}>
+        <Grid xs={12}>
+          <AppPlanandEdit />
+        </Grid>
+        {/* <Grid xs={6}>
           <AppPlan elevation={8} />
         </Grid>
         <Grid xs={6}>
           <AppEdit elevation={7} />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12}>
           <AppHolder title="Tools" subtitle='All Tools' path={paths.dashboard.general.apptools} >
