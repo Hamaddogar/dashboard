@@ -615,20 +615,22 @@ export default function OrdersListView() {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
+        noCancel={false}
         content={
           <>
             Are you sure want to delete items?
           </>
         }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => confirm.onFalse()}
-          >
-            Delete
-          </Button>
-        }
+        action={<Button
+          fullWidth
+          color="error"
+          variant='soft'
+          size="large"
+          onClick={() => confirm.onFalse()}
+          sx={{ borderRadius: '30px' }}
+        >
+          Delete
+        </Button>}
       />
     </Container >
   );

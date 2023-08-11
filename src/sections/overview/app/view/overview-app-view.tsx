@@ -17,8 +17,8 @@ import AppAreaInstalled from '../app-area-installed';
 import AppSummary from '../app-summary';
 import AppOrders from '../app-orders';
 import AppProducts from '../app-products';
-import AppPlan from '../app-plan';
-import AppEdit from '../app-edit';
+// import AppPlan from '../app-plan';
+// import AppEdit from '../app-edit';
 import AppPlanandEdit from '../app-plan-edit';
 // ----------------------------------------------------------------------
 

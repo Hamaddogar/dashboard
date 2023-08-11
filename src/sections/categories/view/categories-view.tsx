@@ -388,7 +388,7 @@ export default function CategoriesView() {
           </Typography>
           <FormControl fullWidth>
             <Select
-            variant='filled'
+              variant='filled'
               value={mySubCat}
               onChange={handleChangeMySubCat}
             >
@@ -428,21 +428,25 @@ export default function CategoriesView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
+        noCancel={false}
         title="Delete"
         content={
           <>
             Are you sure want to delete items?
           </>
         }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => confirm.onFalse()}
-          >
-            Delete
-          </Button>
-        }
+        action={<Button
+          fullWidth
+          color="error"
+          variant='soft'
+          size="large"
+          
+          onClick={() => confirm.onFalse()}
+          sx={{ borderRadius: '30px' }}
+        >
+          Delete
+        </Button>}
+
       />
     </Container >
   );

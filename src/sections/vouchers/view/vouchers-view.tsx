@@ -702,28 +702,15 @@ export default function OrdersListView() {
               onClose={handleDrawerCloseCommon('delete')}
               noCancel={false}
               maxWidth='sm'
-              action={<Stack alignItems='center' direction='row' sx={{ width: '100%' }} justifyContent='center' spacing="10px">
-                <Button
-                  fullWidth
-                  variant="soft"
-                  color="success"
-                  size="large"
-                  sx={{ borderRadius: '30px' }}
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="soft"
-                  color="error"
-                  size="large"
-                  startIcon={<Iconify icon="entypo:cross" />}
-                  sx={{ borderRadius: '30px' }}
-                >
-                  Delete
-                </Button>
-              </Stack>}
+              action={<Button
+                fullWidth
+                color="error"
+                variant='soft'
+                size="large"
+                sx={{ borderRadius: '30px' }}
+              >
+                Delete
+              </Button>}
               content={
                 <Grid container spacing='20px'>
                   <Grid item xs={12} md={12} >
