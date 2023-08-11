@@ -59,7 +59,7 @@ export default function VouchersToolbar({
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
-            placeholder='Search by order ID, phone or customer...'
+            placeholder='Search by voucher name or code...'
             fullWidth
             variant='filled'
             value={filters.name}
@@ -87,11 +87,11 @@ export default function VouchersToolbar({
             }}
           />
 
-          <Button variant='contained' sx={{ backgroundColor: 'rgb(15, 19, 73,.04)', borderRadius: '16px', padding: '15px 15px' }} >
+          <Button variant='contained' sx={{ minWidth: 'auto', backgroundColor: 'rgb(15, 19, 73,.04)', borderRadius: '16px', padding: '15px 15px' }} >
             <Box component='img' src='/raw/sort.svg' />
           </Button>
 
-          <Button variant='contained' sx={{ backgroundColor: 'rgb(15, 19, 73,.04)', borderRadius: '16px', padding: '15px 15px' }} >
+          <Button variant='contained' sx={{ minWidth: 'auto', backgroundColor: 'rgb(15, 19, 73,.04)', borderRadius: '16px', padding: '15px 15px' }} >
             <Box component='img' src='/raw/filter.svg' />
           </Button>
           <IconButton onClick={popover.onOpen}>

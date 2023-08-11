@@ -294,7 +294,7 @@ export const allCustomers = [
     orders: 2,
     status: 'New',
     color: '#76FDD3',
-  },{
+  }, {
     name: "Mohamed Hassan",
     phone: "+9652312127845",
     flag: '/raw/flag.png',
@@ -335,5 +335,37 @@ export const allCustomers = [
     orders: 2,
     status: 'New',
     color: '#76FDD3',
+  },
+];
+
+export const allVouchers = [
+  {
+    title: "Eid Voucher",
+    copen: "H@PPYEID2023",
+    discount: 10,
+    discountType: "Percentage",
+    userCount: 102,
+    status: true,
+  },{
+    title: "Mother Day",
+    copen: "MOMLOVE",
+    discount: 5,
+    discountType: "Amount",
+    userCount: 193,
+    status: true,
+  },{
+    title: "New Year Campaign",
+    copen: "NERWYEAR2024",
+    discount: 12,
+    discountType: "Amount",
+    userCount: 9,
+    status: false,
+  },{
+    title: "Hot Deal",
+    copen: "HOTDISCOUNT20",
+    discount: 20,
+    discountType: "Amount",
+    userCount: 84,
+    status: true,
   },
 ];

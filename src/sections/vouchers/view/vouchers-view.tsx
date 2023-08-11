@@ -2,35 +2,31 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 // @mui
 import Divider from '@mui/material/Divider';
-import { alpha, useTheme } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { Box, Grid, Stack, Chip, Typography, Paper } from '@mui/material';
+import { Box, Grid, Stack, Typography, Switch, MenuItem } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 // _mock
-import { _orders, allOrders } from 'src/_mock';
+import { _orders, allVouchers } from 'src/_mock';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomCrumbs from 'src/components/custom-crumbs/custom-crumbs';
 import { useTable, getComparator } from 'src/components/table';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+import { useSnackbar } from 'src/components/snackbar';
 // types
 import { IOrderItem, IOrderTableFilters, IOrderTableFilterValue } from 'src/types/order';
 //
@@ -40,17 +36,13 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import VouchersToolbar from '../vouchers-toolbar';
 import VouchersFiltersResult from '../vouchers-filters-result';
 import DetailsNavBar from '../DetailsNavBar';
-import StepsNewOrders from '../Steps-New-Order';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All' },
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Accepted', label: 'Accepted' },
-  { value: 'Ready', label: 'Ready' },
-  { value: 'Completed', label: 'Completed' },
-  { value: 'Cancelled', label: 'Cancelled' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Expired', label: 'Expired' },
 ];
 
 
@@ -60,10 +52,22 @@ const defaultFilters: IOrderTableFilters = {
   startDate: null,
   endDate: null,
 };
-
+const stylesActive = { cursor: { xs: 'default', md: "pointer" }, boxShadow: '0px 4px 20px #0F134914', borderRadius: '12px', border: '2px solid transparent', '&:hover': { borderColor: '#1BFCB6' }, tranition: 'all .3s' }
+const stylesDisabled = { cursor: { xs: 'default', md: "pointer" }, background: '#F0F0F4', borderRadius: '12px', border: '2px solid transparent', tranition: 'all .3s' }
 // ----------------------------------------------------------------------
 
 export default function OrdersListView() {
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { copy } = useCopyToClipboard();
+
+  const onCopy = (color: string) => {
+    if (color) {
+      enqueueSnackbar(`Copied! ${color}`);
+      copy(color);
+    }
+  };
 
   const table = useTable({ defaultOrderBy: 'orderNumber' });
 
@@ -71,9 +75,8 @@ export default function OrdersListView() {
 
   const [value, setValue] = useState('All');
 
-  const theme = useTheme();
 
-  const [data, setData] = useState(allOrders)
+  const [data, setData] = useState(allVouchers)
 
   const [tableData] = useState(_orders);
 
@@ -114,40 +117,23 @@ export default function OrdersListView() {
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     if (newValue === 'All') {
-      setData(allOrders);
+      setData(allVouchers);
     } else {
-      const newData = allOrders.filter(order => order.status === newValue)
+      const newData = allVouchers.filter(order => newValue === "Active" ? order.status : !(order.status))
       setData(newData);
     }
   };
 
-  const [openDetails, setOpenDetails] = useState({
-    open: false,
-    item: null // null || object
-  });
-
-  const toggleDrawer = (item: any) => (event: React.SyntheticEvent | React.MouseEvent) => {
-    setOpenDetails({ open: true, item });
-  };
-
-  const handleDrawerClose = (event: React.SyntheticEvent | React.KeyboardEvent) => {
-    if (
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' ||
-        (event as React.KeyboardEvent).key === 'Shift')
-    ) {
-      return;
-    }
-    setOpenDetails({ open: false, item: null });
-  };
 
   // new order
-  const [openCreateOrder, setOpenCreateOrder] = useState(false);
-  const [openAnalytics, setOpenAnalytics] = useState(false);
+  const [openCreateVoucher, setOpenCreateVoucher] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const toggleDrawerCommon = (state: string) => (event: React.SyntheticEvent | React.MouseEvent) => {
-    if (state === "drawer") setOpenCreateOrder(pv => !pv)
-    else if (state === "analytics") setOpenAnalytics(pv => !pv)
+    if (state === "new") setOpenCreateVoucher(pv => !pv)
+    else if (state === "details") setOpenDetails(pv => !pv)
+    else if (state === "delete") setOpenDelete(pv => !pv)
   };
 
   const handleDrawerCloseCommon = (state: string) => (event: React.SyntheticEvent | React.KeyboardEvent) => {
@@ -157,21 +143,30 @@ export default function OrdersListView() {
         (event as React.KeyboardEvent).key === 'Shift')
     ) { return; }
 
-    if (state === "drawer") setOpenCreateOrder(false)
-    else if (state === "analytics") setOpenAnalytics(false)
+    if (state === "new") setOpenCreateVoucher(false)
+    else if (state === "details") setOpenDetails(false)
+    else if (state === "delete") setOpenDelete(false)
+
+  };
+
+
+  const [mySubCat, setMySubCat] = React.useState('All Products');
+
+  const handleChangeMySubCat = (event: SelectChangeEvent) => {
+    setMySubCat(event.target.value as string);
   };
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <Grid container justifyContent='space-between' alignItems={{ xs: 'flex-start', md: 'center' }}>
         <Grid item xs={12} md="auto">
-          <CustomCrumbs heading="Orders" crums={false} />
+          <CustomCrumbs heading="Vouchers" crums={false} />
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={3}>
           <Stack direction='row' alignItems='center' justifyContent={{ xs: 'flex-start', md: 'flex-end' }} spacing='20px'>
-            <Button startIcon={<Box component='img' src='/raw/orderreport.svg' />} fullWidth sx={{ borderRadius: '30px', color: '#8688A3', backgroundColor: '#F0F0F4' }} component='h5' variant='contained' color='primary' onClick={toggleDrawerCommon('analytics')}> Analytics </Button>
-            <Button startIcon="+" fullWidth sx={{ borderRadius: '30px', color: '#0F1349' }} component='h5' variant='contained' color='primary' onClick={toggleDrawerCommon('drawer')} > Create Order </Button>
+            {/* <Button startIcon={<Box component='img' src='/raw/orderreport.svg' />} fullWidth sx={{ borderRadius: '30px', color: '#8688A3', backgroundColor: '#F0F0F4' }} component='h5' variant='contained' color='primary' onClick={toggleDrawerCommon('analytics')}> Analytics </Button> */}
+            <Button startIcon="+" fullWidth sx={{ borderRadius: '30px', color: '#0F1349' }} component='h5' variant='contained' color='primary' onClick={toggleDrawerCommon('new')} > Create New Voucher </Button>
           </Stack>
         </Grid>
 
@@ -222,27 +217,16 @@ export default function OrdersListView() {
                             ((tab.value === 'All' || tab.value === value) && 'filled') || 'soft'
                           }
                           color={
-                            (tab.value === 'Accepted' && 'primary') ||
+                            (tab.value === 'Active' && 'primary') ||
                             (tab.value === 'Ready' && 'secondary') ||
-                            (tab.value === 'Completed' && 'success') ||
-                            (tab.value === 'Pending' && 'warning') ||
-                            (tab.value === 'Cancelled' && 'error') ||
                             'default'
                           }
                         >
-                          {tab.value === 'All' && allOrders.length}
-                          {tab.value === 'Completed' &&
-                            allOrders.filter((order) => order.status === 'Completed').length}
-                          {tab.value === 'Pending' &&
-                            allOrders.filter((order) => order.status === 'Pending').length}
-                          {tab.value === 'Cancelled' &&
-                            allOrders.filter((order) => order.status === 'Cancelled').length}
-                          {tab.value === 'refunded' &&
-                            allOrders.filter((order) => order.status === 'refunded').length}
-                          {tab.value === 'Ready' &&
-                            allOrders.filter((order) => order.status === 'Ready').length}
-                          {tab.value === 'Accepted' &&
-                            allOrders.filter((order) => order.status === 'Accepted').length}
+                          {tab.value === 'All' && allVouchers.length}
+                          {tab.value === 'Expired' &&
+                            allVouchers.filter((order) => !order.status).length}
+                          {tab.value === 'Active' &&
+                            allVouchers.filter((order) => order.status).length}
                         </Label>
                       }
                     />
@@ -250,326 +234,78 @@ export default function OrdersListView() {
                 </TabList>
               </Box>
 
-              <TabPanel value='All' sx={{ px: 0, }}>
+              <TabPanel value={value} sx={{ px: 0, pb: 0 }}>
                 <Grid container spacing={2}>
                   {data.map((order, indx) =>
                     <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
+                      {/* <Paper elevation={4} > */}
+                      <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} p={3} minHeight="80px" sx={order.status ? stylesActive : stylesDisabled}
+                      >
 
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '188px' } }} >{order.address}</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '188px' } }} >{order.totalItems} items</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
+                        <Grid item xs={6} md='auto'>
+                          <Box sx={{ minWidth: { xs: 'auto', md: '140px' } }}>
+                            <Typography component='p' color='#8688A3' variant="subtitle2" sx={{ fontSize: '.8rem' }} >{order.title}</Typography>
+                            {
+                              order.status ?
+                                <Typography component='p' color='#0D6EFD' variant="subtitle2" sx={{ mt: '5px', fontWeight: 900, cursor: 'pointer', fontSize: '.8rem', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => onCopy(order.copen)} >{order.copen} <Iconify icon="tabler:copy" />  </Typography>
+                                :
+                                <Typography component='p' color='#8688A3' variant="subtitle2" sx={{ mt: '5px', fontWeight: 900, fontSize: '.8rem', }} >{order.copen}</Typography>
+                            }
+                          </Box>
                         </Grid>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </TabPanel>
-              <TabPanel value='Pending' sx={{ px: 0, }}>
-                <Grid container spacing={2}>
-                  {data.map((order, indx) =>
-                    <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
 
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '188px' } }} >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '188px' } }} >{order.address}</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: '188px' }} >{order.totalItems} items</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
+                        <Grid item xs={6} md='auto' >
+                          <Typography component='p' color='#0F1349' variant="subtitle2" sx={{ fontSize: '.8rem' }} >{order.discount} {order.discountType === "Amount" ? "KWD" : "%"} <span style={{ fontSize: '.7rem' }}>({order.discountType})</span>  </Typography>
                         </Grid>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </TabPanel>
-              <TabPanel value='Accepted' sx={{ px: 0, }}>
-                <Grid container spacing={2}>
-                  {data.map((order, indx) =>
-                    <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
-
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} >{order.address}</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: '188px' }} >{order.totalItems} items</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
+                        <Grid item xs={6} md='auto' >
+                          <Typography component='p' color='#0F1349' variant="subtitle2" sx={{ fontSize: '.8rem' }} >{order.userCount} Uses </Typography>
                         </Grid>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </TabPanel>
-              <TabPanel value='Ready' sx={{ px: 0, }}>
-                <Grid container spacing={2}>
-                  {data.map((order, indx) =>
-                    <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
 
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
+                        <Grid item xs={6} md='auto' >
+                          <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: '13px' }}>
                             <Box
                               sx={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '20px',
+                                background: 'rgb(134, 136, 163,0.09)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px'
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  background: 'rgb(134, 136, 163,0.2)',
+                                }
                               }}
+                              onClick={order.status ? toggleDrawerCommon("delete") : () => { }}
                             >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} >{order.address}</Typography>
-                              </Box>
+                              <Box component='img' src='/raw/trash-can-solid.svg' width='13px' />
                             </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
                             <Box
                               sx={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '20px',
+                                background: 'rgb(134, 136, 163,0.09)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px'
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  background: 'rgb(134, 136, 163,0.2)',
+                                }
                               }}
+                              onClick={toggleDrawerCommon("details")}
                             >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: '188px' }} >{order.totalItems} items</Typography>
-                              </Box>
+                              <Box component='img' src='/raw/edit-pen.svg' width='13px' />
                             </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
+                            <Switch checked={order.status} />
+                          </Box>
                         </Grid>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </TabPanel>
-              <TabPanel value='Completed' sx={{ px: 0, }}>
-                <Grid container spacing={2}>
-                  {data.map((order, indx) =>
-                    <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
 
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} >{order.address}</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: '188px' }} >{order.totalItems} items</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
-                        </Grid>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-              </TabPanel>
-              <TabPanel value='Cancelled' sx={{ px: 0, }}>
-                <Grid container spacing={2}>
-                  {data.map((order, indx) =>
-                    <Grid key={indx} item xs={12}>
-                      <Paper elevation={4} onClick={toggleDrawer(order)}>
-                        <Grid container item alignItems='center' justifyContent='space-between' rowGap={3} sx={{ px: 3, py: { xs: 3, md: 0 }, minHeight: '110px' }}>
-
-                          <Grid item xs={6} md='auto'>
-                            <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} >{order.idNo}</Typography>
-                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >{order.time}</Typography>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.flag} alt=" " width='22px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.name} </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} >{order.address}</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto' >
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                            >
-                              <Box component='img' src={order.pay} alt=" " width='25px' />
-                              <Box display='flex' gap='0px' flexDirection='column' >
-                                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > {order.price} KWD </Typography>
-                                <Typography component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: '188px' }} >{order.totalItems} items</Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6} md='auto'>
-                            <Chip label={order.status} size='small' sx={{ backgroundColor: order.color }} />
-                          </Grid>
-
-                        </Grid>
-                      </Paper>
+                      </Grid>
+                      {/* </Paper> */}
                     </Grid>
                   )}
                 </Grid>
@@ -578,20 +314,403 @@ export default function OrdersListView() {
             </TabContext>
 
             <DetailsNavBar
-              open={openDetails.open}
-              onClose={handleDrawerClose}
-              details={openDetails.item}
-              title="Order Details"
-              actions={<Stack alignItems='center' justifyContent='center' spacing="10px">
+              open={openDetails}
+              onClose={handleDrawerCloseCommon('details')}
+              title="Voucher Details"
+              actions={<Button
+                fullWidth
+                variant="soft"
+                color="success"
+                size="large"
+                sx={{ borderRadius: '30px' }}
+              >
+                Save
+              </Button>}
+            >
+              <Divider flexItem />
+              <Box width='100%'>
+
+                <Typography pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Name (English)
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue='Happy Eid' name='NAME' />
+
+
+                <Typography mt='20px' pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Name (Arabic)
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue='عيد سعيد' name='NAME' />
+
+
+
+                <Typography mt='20px' pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Code
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue="H@PPYEID2023" name='Code' />
+
+                <Stack mt='20px' pb='5px' direction='row' alignItems='center' justifyContent="space-between">
+                  <Box>
+                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                      Voucher Status
+                    </Typography>
+                    <Typography component='p' variant="subtitle2" sx={{ fontWeight: 900, fontSize: '1rem' }} >
+                      Available
+                    </Typography>
+                  </Box>
+                  <Switch defaultChecked />
+                </Stack>
+
+
+                <Grid container mt='20px' columnSpacing="20px" pb='5px' alignItems='flex-end' rowGap='20px' justifyContent='space-between'>
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Select Discount Type
+                    </Typography>
+                    <Box sx={{
+                      width: "100%",
+                      height: "56px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#8688A3',
+                      fontSize: '.9rem',
+                      background: 'rgb(245, 245, 248)',
+                      borderRadius: '16px',
+                      fontWeight: 800
+                    }}>
+                      Fixed Amount
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Box sx={{
+                      width: "100%",
+                      height: "56px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#0F1349',
+                      fontSize: '.9rem',
+                      background: 'rgb(209, 255, 240)',
+                      borderRadius: '16px',
+                      fontWeight: 800,
+                      border: '2px solid #1AF9B3',
+                    }}>
+                      Percentage
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Discount Percentage
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue="20%" name='Percentage' />
+                  </Grid>
+
+
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Up to
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='10' name='PHONE'
+                      sx={{
+                        '& .MuiInputAdornment-root': {
+                          marginTop: '0px !important',
+                        },
+                        '& input': {
+                          paddingRight: '0px !important'
+                        }
+                      }}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">
+                          <Stack direction='row' alignItems='center' spacing="5px">
+                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.6rem' }} >
+                              KWD
+                            </Typography>
+                            <Iconify icon="mingcute:down-fill" width={20} />
+                          </Stack>
+                        </InputAdornment>,
+                      }} />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Total Uses
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='500' name='PHONE' />
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Start Date
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='2023-06-28' name='sd' />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      End Date
+                    </Typography>
+                    <TextField fullWidth type='date' variant='filled' defaultValue='2023-10-07' name='ed' />
+                  </Grid>
+
+
+                  <Grid item xs={12}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Voucher Coverage
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        variant='filled'
+                        value={mySubCat}
+                        sx={{
+                          fontWeight: 900
+                        }}
+                        onChange={handleChangeMySubCat}
+                      // endAdornment={<div style={{ fontSize: '12px', marginRight: '20px', marginTop: '3px' }}>KWD</div>}
+                      >
+                        <MenuItem value='All Products'>All Products</MenuItem>
+                        <MenuItem value='Laptops'>Laptops</MenuItem>
+                        <MenuItem value='Clothes'>Clothes</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+
+              </Box>
+            </DetailsNavBar>
+
+            {/* create new Vocher */}
+            <DetailsNavBar
+              open={openCreateVoucher}
+              onClose={handleDrawerCloseCommon('new')}
+              title="Create New Order"
+              actions={<Button
+                fullWidth
+                variant="soft"
+                color="success"
+                size="large"
+                sx={{ borderRadius: '30px' }}
+              >
+                Save
+              </Button>}
+            >
+              <Divider flexItem />
+              <Box width='100%'>
+
+                <Typography pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Name (English)
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue='Happy Eid' name='NAME' />
+
+
+                <Typography mt='20px' pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Name (Arabic)
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue='عيد سعيد' name='NAME' />
+
+
+
+                <Typography mt='20px' pb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Voucher Code
+                </Typography>
+                <TextField fullWidth variant='filled' defaultValue="H@PPYEID2023" name='Code' />
+
+                <Stack mt='20px' pb='5px' direction='row' alignItems='center' justifyContent="space-between">
+                  <Box>
+                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                      Voucher Status
+                    </Typography>
+                    <Typography component='p' variant="subtitle2" sx={{ fontWeight: 900, fontSize: '1rem' }} >
+                      Available
+                    </Typography>
+                  </Box>
+                  <Switch defaultChecked />
+                </Stack>
+
+
+                <Grid container mt='20px' columnSpacing="20px" pb='5px' alignItems='flex-end' rowGap='20px' justifyContent='space-between'>
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Select Discount Type
+                    </Typography>
+                    <Box sx={{
+                      width: "100%",
+                      height: "56px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#0F1349',
+                      fontSize: '.9rem',
+                      background: 'rgb(209, 255, 240)',
+                      borderRadius: '16px',
+                      fontWeight: 800,
+                      border: '2px solid #1AF9B3',
+                    }}>
+                      Fixed Amount
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Box sx={{
+                      width: "100%",
+                      height: "56px",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#8688A3',
+                      fontSize: '.9rem',
+                      background: 'rgb(245, 245, 248)',
+                      borderRadius: '16px',
+                      fontWeight: 800
+                    }}>
+                      Percentage
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Discount Amount
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='10' name='PHONE'
+                      sx={{
+                        '& .MuiInputAdornment-root': {
+                          marginTop: '0px !important',
+                        },
+                        '& input': {
+                          paddingRight: '0px !important'
+                        }
+                      }}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">
+                          <Stack direction='row' alignItems='center' spacing="5px">
+                            <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.6rem' }} >
+                              KWD
+                            </Typography>
+                            <Iconify icon="mingcute:down-fill" width={20} />
+                          </Stack>
+                        </InputAdornment>,
+                      }} />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Total Uses
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='500' name='PHONE' />
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Start Date
+                    </Typography>
+                    <TextField fullWidth variant='filled' defaultValue='2023-06-28' name='sd' />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      End Date
+                    </Typography>
+                    <TextField fullWidth type='date' variant='filled' defaultValue='2023-10-07' name='ed' />
+                  </Grid>
+
+
+                  <Grid item xs={12}>
+                    <Typography component='p' mb='5px' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }} >
+                      Voucher Coverage
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        variant='filled'
+                        value={mySubCat}
+                        sx={{
+                          fontWeight: 900
+                        }}
+                        onChange={handleChangeMySubCat}
+                      // endAdornment={<div style={{ fontSize: '12px', marginRight: '20px', marginTop: '3px' }}>KWD</div>}
+                      >
+                        <MenuItem value='All Products'>All Products</MenuItem>
+                        <MenuItem value='Laptops'>Laptops</MenuItem>
+                        <MenuItem value='Clothes'>Clothes</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+
+                </Grid>
+
+
+                {/* <Typography mt='20px' mb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Mobile Number
+                </Typography>
+
+                <TextField fullWidth variant='filled' defaultValue='965128743291' name='PHONE'
+                  sx={{
+                    '& .MuiInputAdornment-root': {
+                      marginTop: '0px !important',
+                      // paddingLeft: '10px'
+                    },
+                    '& input': {
+                      paddingLeft: '2px !important'
+                    }
+                  }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <Stack direction='row' alignItems='center' spacing="8px">
+                        <Iconify icon="mingcute:down-fill" width={43} />
+                        <Box component='img' src='/raw/flagN.png' />
+                        <Divider orientation="vertical" variant='middle' flexItem />
+                      </Stack>
+                    </InputAdornment>,
+                  }}
+                /> */}
+
+
+                {/* <Typography mt='20px' mb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Email Address (Optional)
+                </Typography>
+                <TextField fullWidth variant='filled' type='email' defaultValue='ahmed.omar@gmail.com' name='email' />
+
+
+                <Typography mt='20px' mb='5px' component='p' noWrap variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem' }} >
+                  Delivery Address
+                </Typography>
+
+                <Box sx={{ borderRadius: '12px', padding: '24px', background: 'rgb(245, 245, 248)' }}>
+                  <Stack direction='row' alignItems='center' spacing='10px'>
+                    <Iconify icon="ion:location" width={45} style={{ color: '#8688A3' }} />
+                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', fontWeight: 900 }} >
+                      Ali Sabah Al-Salem - Block 5A - Street 8 House 4 - Floor 2
+                    </Typography>
+                  </Stack>
+
+                  <Divider sx={{ my: '22px' }} />
+                  <Stack direction='row' alignItems='center' spacing='10px'>
+                    <Iconify icon="mingcute:add-fill" width={30} style={{ color: '#8688A3' }} />
+                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.9rem', fontWeight: 900 }} >
+                      Add Delivery Location
+                    </Typography>
+                  </Stack>
+
+                </Box> */}
+
+
+              </Box>
+            </DetailsNavBar>
+
+
+            <ConfirmDialog
+              open={openDelete}
+              onClose={handleDrawerCloseCommon('delete')}
+              noCancel={false}
+              maxWidth='sm'
+              action={<Stack alignItems='center' direction='row' sx={{ width: '100%' }} justifyContent='center' spacing="10px">
                 <Button
                   fullWidth
                   variant="soft"
                   color="success"
                   size="large"
-                  startIcon={<Iconify icon="subway:tick" />}
                   sx={{ borderRadius: '30px' }}
                 >
-                  Accept Offer
+                  Cancel
                 </Button>
 
                 <Button
@@ -602,296 +721,17 @@ export default function OrdersListView() {
                   startIcon={<Iconify icon="entypo:cross" />}
                   sx={{ borderRadius: '30px' }}
                 >
-                  Cancel Order
+                  Delete
                 </Button>
               </Stack>}
-            >
-
-              <Divider flexItem />
-
-              <Stack sx={{ width: '100%' }} direction='row' alignItems='flex-start' justifyContent='space-between'>
-                <Box>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }} > #4254538741 </Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >22/03/2023, 3:54 PM</Typography>
-                </Box>
-                <Chip label='Pending' size='small' sx={{ backgroundColor: 'rbg(241, 209, 105,.2)' }} />
-              </Stack>
-
-              {/* infor */}
-              <Box sx={{ width: '100%', bgcolor: 'background.neutral', borderRadius: '16px', p: 2.5 }}>
-                <Typography component='p' mb='15px' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> 2 Items is added </Typography>
-
-                <Stack spacing='20px' direction='row' alignItems='center' justifyContent='flex-start'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '14px', color: '#8688A3', fontWeight: 800 }}>1x</Typography>
-                  <Box component='img' src='/raw/s4.png' sx={{ width: '40px' }} />
-
-                  <Box>
-                    <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> iPhone 13 Pro Max </Typography>
-                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}>120.00 KWD</Typography>
-                  </Box>
-                </Stack>
-
-
-                <Stack mt='20px' spacing='20px' direction='row' alignItems='center' justifyContent='flex-start'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '14px', color: '#8688A3', fontWeight: 800 }}>2x</Typography>
-                  <Box component='img' src='/raw/s5.png' sx={{ width: '40px' }} />
-
-                  <Box>
-                    <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> Apple AirPods Pro White </Typography>
-                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}>90.00 KWD</Typography>
-                  </Box>
-                </Stack>
-
-
-              </Box>
-
-              {/* payment summary */}
-              <Box sx={{ width: '100%', bgcolor: 'background.neutral', borderRadius: '16px', p: 2.5, display: 'flex', gap: '5px', flexDirection: 'column' }}>
-                <Typography component='p' mb='15px' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> Payment Summary </Typography>
-
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Subtotal</Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 700 }}> 210.500 KWD </Typography>
-                </Stack>
-
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' color='error' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Discount</Typography>
-                  <Typography component='p' color='error' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 700 }}> - 8.000 KWD</Typography>
-                </Stack>
-
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>VAT (0%)</Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 700 }}> 0.000 KWD </Typography>
-                </Stack>
-
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Delivery Fees</Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 700 }}> 5.000 KWD </Typography>
-                </Stack>
-
-                <Divider flexItem />
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Total</Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 900 }}> 84.55 KWD </Typography>
-                </Stack>
-
-                <Stack spacing='10px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Payment Method</Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 900 }}> MasterCard </Typography>
-                </Stack>
-
-
-
-              </Box>
-
-              {/* print reciept */}
-              <Box sx={{ width: '100%', bgcolor: 'background.neutral', borderRadius: '16px', p: 2.5, display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                <Typography component='p' mb='15px' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> Print Receipt </Typography>
-                <FormControl>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Language</Typography>
-                  <RadioGroup
-                    aria-labelledby="Language-selection"
-                    defaultValue="English"
-                    name="Language-selection-group"
-                  >
-                    <Grid container alignItems='center' justifyContent='space-between'>
-                      <Grid item xs={6}>
-                        <FormControlLabel value="English" control={<Radio />} label="English" />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormControlLabel value="Arabic" control={<Radio />} label="Arabic" />
-                      </Grid>
-                    </Grid>
-                  </RadioGroup>
-                </FormControl>
-                <FormControl>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>Type</Typography>
-                  <RadioGroup
-                    aria-labelledby="Language-selection"
-                    defaultValue="A4"
-                    name="Language-selection-group"
-                  >
-                    <Grid container alignItems='center' justifyContent='space-between'>
-                      <Grid item xs={6}>
-                        <FormControlLabel value="Thermal" control={<Radio />} label="Thermal" />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormControlLabel value="A4" control={<Radio />} label="A4" />
-                      </Grid>
-                    </Grid>
-                  </RadioGroup>
-                </FormControl>
-                <Button
-                  fullWidth
-                  variant="soft"
-                  size="large"
-                  startIcon={<Iconify icon="mdi:printer-outline" />}
-                  sx={{
-                    borderRadius: '30px',
-                    color: alpha(theme.palette.common.black, 0.8),
-                    backgroundColor: alpha(theme.palette.grey[400], 0.48),
-                    boxShadow: '0px 6px 20px #00000014',
-                    '&:hover': {
-                      color: theme.palette.common.black,
-                      // backgroundColor: theme.palette.grey[900],
-                    },
-                  }}
-                >
-                  Print Receipt
-                </Button>
-
-
-
-
-              </Box>
-
-              {/* customer info */}
-              <Box sx={{ width: '100%', bgcolor: 'background.neutral', borderRadius: '16px', p: 2.5, display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                <Typography component='p' mb='15px' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> Customer Info </Typography>
-                <Stack direction='row' spacing='10px'>
-                  <Box><Box component='img' src='/raw/flag.png' /></Box>
-                  <Box>
-                    <Typography component='p' variant="subtitle2" sx={{ fontSize: '.9rem', fontWeight: 700 }}> Mohamed Hassan </Typography>
-                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>mohamed.hassan@gmail.com</Typography>
-                    <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}>+9652312127845</Typography>
-                  </Box>
-                </Stack>
-                <Divider flexItem sx={{ my: '10px' }} />
-                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.9rem', fontWeight: 700 }}>Delivery Address </Typography>
-                <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}> City: Ahmadi </Typography>
-                <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}> Area: Ali Sabah Al-Salem </Typography>
-                <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}> Block: 5A </Typography>
-                <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}> Street: 10 </Typography>
-                <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem' }}> House: 4 </Typography>
-                <Stack mb='16px' direction='row' alignItems='center' justifyContent='space-between'>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem', display: 'flex', alognItems: 'center' }}> <Iconify icon="mdi:content-copy" />  Copy Address </Typography>
-                  <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.85rem', display: 'flex', alognItems: 'center' }}> <Iconify icon="mdi:map-marker-outline" /> Show On Map </Typography>
-                </Stack>
-                <Button
-                  fullWidth
-                  variant="soft"
-                  size="large"
-                  startIcon={<Iconify icon="mdi:printer-outline" />}
-                  sx={{
-                    borderRadius: '30px',
-                    color: alpha(theme.palette.common.black, 0.8),
-                    backgroundColor: alpha(theme.palette.common.white, 0.48),
-                    boxShadow: '0px 6px 20px #00000014',
-                    '&:hover': {
-                      color: theme.palette.common.black,
-                      backgroundColor: alpha(theme.palette.common.white, 1),
-                    },
-                  }}
-                >
-                  Send via WhatsApp
-                </Button>
-              </Box>
-
-              {/* Time line */}
-              <Box sx={{ width: '100%', bgcolor: 'background.neutral', borderRadius: '16px', p: 2.5, display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                <Typography component='p' variant="subtitle2" sx={{ fontSize: '.8rem', fontWeight: 800 }}> Order Timeline </Typography>
-                <Box>
-                  <Timeline
-                    sx={{
-                      padding: 0,
-                      margin: 0,
-                      [`& .${timelineItemClasses.root}:before`]: {
-                        flex: 0,
-                        padding: 0,
-                      },
-                    }}
-                  >
-                    <TimelineItem>
-                      <TimelineSeparator>
-                        <TimelineDot />
-                        <TimelineConnector style={{ borderStyle: 'dashed', borderColor: '#8688A3', borderWidth: '1px' }} />
-                      </TimelineSeparator>
-                      <TimelineContent>
-                        <Typography component='p' variant="subtitle2" sx={{ fontSize: '.9rem' }}> Created by <strong> Ahmed hassan</strong> </Typography>
-                        <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}>24 Jun 2023, 4:51 PM</Typography>
-                      </TimelineContent>
-                    </TimelineItem>
-                    <TimelineItem>
-                      <TimelineSeparator>
-                        <TimelineDot />
-                        {/* <TimelineConnector style={{ borderStyle: 'dashed', borderColor: '#8688A3', borderWidth: '1px' }} /> */}
-                      </TimelineSeparator>
-                      <TimelineContent>
-                        <Typography component='p' variant="subtitle2" sx={{ fontSize: '.9rem' }}> Created by <strong> Kareem Ali (Admin)</strong> </Typography>
-                        <Typography component='p' variant="subtitle2" sx={{ opacity: 0.7, fontSize: '.8rem' }}>24 Jun 2023, 5:36 PM</Typography>
-                      </TimelineContent>
-                    </TimelineItem>
-                  </Timeline>
-                </Box>
-              </Box>
-
-            </DetailsNavBar>
-
-            {/* create new Order */}
-            <DetailsNavBar
-              open={openCreateOrder}
-              onClose={handleDrawerCloseCommon('drawer')}
-              title="Create New Order"
-            >
-              <Divider flexItem />
-              <StepsNewOrders closeDrawer={handleDrawerCloseCommon('drawer')} />
-            </DetailsNavBar>
-
-
-            <ConfirmDialog
-              open={openAnalytics}
-              onClose={handleDrawerCloseCommon('analytics')}
-              noCancel={false}
-              maxWidth='sm'
-              
               content={
                 <Grid container spacing='20px'>
                   <Grid item xs={12} md={12} >
-                    <CustomCrumbs heading="Orders Analytics" description='Select time period to see results' crums={false} />
+                    <Typography component='h5' variant="h5" > Wana delete it ?</Typography>
                   </Grid>
-
-                  {
-                    [
-                      {
-                        count: "1,136",
-                        color: '134, 136, 163',
-                        title: 'Total Orders',
-                      },
-                      {
-                        count: "56",
-                        color: '241, 209, 105',
-                        title: 'Pending',
-                      },
-                      {
-                        count: "136",
-                        color: '203, 194, 255',
-                        title: 'Ready',
-                      },
-                      {
-                        count: "56",
-                        color: '111, 198, 255',
-                        title: 'Completed',
-                      },
-                      {
-                        count: "56",
-                        color: '27, 252, 182',
-                        title: 'Canceled',
-                      },
-                      {
-                        count: "136",
-                        color: '255, 133, 171',
-                        title: 'Accepted',
-                      },
-                    ].map((item, indx) => <Grid key={indx} item xs={6} md={4}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', flexDirection: 'column', height: '120px', backgroundColor: `rgb(${item.color},.12)`, borderRadius: '16px' }}>
-                        <Box sx={{ height: '12px', width: '12px', backgroundColor: `rgb(${item.color})`, borderRadius: '12px' }} />
-                        <Typography component='p' variant="subtitle2" sx={{ fontSize: '1.2rem', fontWeight: 800 }} >{item.count}</Typography>
-                        <Typography component='p' variant="subtitle2" sx={{ opacity: 0.6, fontSize: '.7rem', maxWidth: { xs: '120px', md: '180px' } }} noWrap >{item.title}</Typography>
-                      </Box>
-                    </Grid>)
-                  }
-
-
+                  <Grid item xs={12} md={12} >
+                    <Typography component='p' variant="subtitle2" > Delete this Voucher ?</Typography>
+                  </Grid>
                 </Grid>
               }
             />

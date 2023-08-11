@@ -91,15 +91,15 @@ export function useNavData() {
             path: paths.dashboard.payments.root,
             icon: ICONS.payments,
           },
-          // {
-          //   title: t('Vouchers'),
-          //   path: paths.dashboard.vouchers.root,
-          //   icon: ICONS.vouchers,
-          // },
           {
             title: t('Integrations'),
             path: paths.dashboard.integrations.root,
             icon: ICONS.integrations,
+          },
+          {
+            title: t('Vouchers'),
+            path: paths.dashboard.vouchers.root,
+            icon: ICONS.vouchers,
           },
           {
             title: t('ecommerce'),
